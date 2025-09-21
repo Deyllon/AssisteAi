@@ -5,6 +5,7 @@ services:
     image: mongo:latest
 
     container_name: assite-ai-mongo
+    mem_limit: 156m
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${MONGO_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASS}
@@ -17,10 +18,23 @@ services:
     container_name: assite-ai-redis
     restart: always
     command: --requirepass ${REDIS_PASSWORD}
+    mem_limit: 156m
     ports:
       - '6379:6379'
     volumes:
       - redisdata:/data
+  nodeapp:
+    build: .
+    ports:
+      - '3000:3000'
+    mem_limit: 312m
+    volumes:
+      - .:/app
+      - /app/node_modules
+    depends_on:
+      - redis
+      - mongodb
+    command: npm run start:prod
 volumes:
   mongodata:
   redisdata:
